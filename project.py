@@ -36,7 +36,16 @@ def all_lights_off():
         for light in traffic_light.values():
             light.off()
 
-def switch_lights(currently_green, currently_red):
+def switch_lights(light_a, light_b):
+    if traffic_lights[light_a]["green"].value() == 1 and traffic_lights[light_b]["red"].value() == 1:
+        currently_green = light_a
+        currently_red = light_b
+    elif traffic_lights[light_b]["green"].value() == 1 and traffic_lights[light_a]["red"].value() == 1:
+        currently_green = light_b
+        currently_red = light_a
+    else:
+        raise ValueError("switch_lights expects one green and one red traffic light")
+
     green_to_red(currently_green)
     sleep(1)
     red_to_green(currently_red)
@@ -48,7 +57,7 @@ traffic_lights["pedestrians"]["green"].on()
 while True:
     try:
         sleep(5)
-        switch_lights("pedestrians", "cars")
+        switch_lights("cars", "pedestrians")
         sleep(5)
         switch_lights("cars", "pedestrians")
     except KeyboardInterrupt:
