@@ -36,11 +36,21 @@ def all_lights_off():
         for light in traffic_light.values():
             light.off()
 
+def get_light_color(traffic_light):
+    if traffic_lights[traffic_light]["green"].value() == 1:
+        return "green"
+    if traffic_lights[traffic_light]["red"].value() == 1:
+        return "red"
+    return "other"
+
 def switch_lights(light_a, light_b):
-    if traffic_lights[light_a]["green"].value() == 1 and traffic_lights[light_b]["red"].value() == 1:
+    color_a = get_light_color(light_a)
+    color_b = get_light_color(light_b)
+
+    if color_a == "green" and color_b == "red":
         currently_green = light_a
         currently_red = light_b
-    elif traffic_lights[light_b]["green"].value() == 1 and traffic_lights[light_a]["red"].value() == 1:
+    elif color_b == "green" and color_a == "red":
         currently_green = light_b
         currently_red = light_a
     else:
