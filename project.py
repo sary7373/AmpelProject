@@ -36,6 +36,11 @@ def all_lights_off():
         for light in traffic_light.values():
             light.off()
 
+def switch_lights(currently_green, currently_red):
+    green_to_red(currently_green)
+    sleep(1)
+    red_to_green(currently_red)
+
 
 all_lights_off()
 traffic_lights["cars"]["red"].on()
@@ -43,11 +48,8 @@ traffic_lights["pedestrians"]["green"].on()
 while True:
     try:
         sleep(5)
-        green_to_red("pedestrians")
-        red_to_green("cars")
+        switch_lights("pedestrians", "cars")
         sleep(5)
-        green_to_red("cars")
-        red_to_green("pedestrians")
-        sleep(5)
+        switch_lights("cars", "pedestrians")
     except KeyboardInterrupt:
         break
