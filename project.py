@@ -86,6 +86,8 @@ html = """<!DOCTYPE html>
 cars_request = False
 pedestrian_request = False
 
+MIN_GREEN_MS = 3000  # Mindestens 3 Sekunden grün, bevor Request wirkt
+
 while True:
     try:
         conn, addr = server.accept()
@@ -116,7 +118,27 @@ while True:
     except OSError:
         pass
 
-    if ticks_diff(ticks_ms(), state_start) >= STATES[current_state][6]:
+    now = ticks_ms()
+    elapsed = ticks_diff(now, state_start)
+
+    if elapsed >= STATES[current_state][6]:
         current_state = (current_state + 1) % len(STATES)
         apply_state(current_state)
-        state_start = ticks_ms()
+        state_start = now
+
+    elif (pedestrian_request
+          and current_state == 0
+          and elapsed >= MIN_GREEN_MS):
+        current_state = 1
+        apply_state(current_state)
+        state_start = now
+        pedestrian_request = False
+
+
+    elif (cars_request
+          and current_state == 4
+          and elapsed >= MIN_GREEN_MS):
+        current_state = 5
+        apply_state(current_state)
+        state_start = now
+        cars_request = False
