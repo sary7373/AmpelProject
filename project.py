@@ -70,23 +70,48 @@ html = """<!DOCTYPE html>
 <html>
   <head><title>Ampelschaltung</title></head>
   <body>
-    <h1>Traffic lights</h1>
-    <p>Hello cars and pedestrians</p>
+    <h1>Traffic Lights</h1>
+      <button onclick="request('/cars')">cars: request green</button>
+      <button onclick="request('/pedestrians')">pedestrians: request green</button>
+      <script>
+      function request(path) {
+        fetch(path).catch(() => {});
+      }
+    </script>
   </body>
 </html>
 """
 
 
+cars_request = False
+pedestrian_request = False
+
 while True:
     try:
         conn, addr = server.accept()
-        conn.setblocking(False)
+        conn.settimeout(0.1)
+        request = b''
         try:
-            conn.recv(1024)
+            request = conn.recv(1024)
         except OSError:
             pass
-        conn.send('HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n')
-        conn.send(html)
+
+        if b'/favicon.ico' in request:
+            conn.send(b'HTTP/1.0 404 Not Found\r\nConnection: close\r\n\r\n')
+        elif b'/cars' in request:
+            cars_request = True
+            print("car requested")
+            conn.send(b'HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n')
+            conn.sendall(html.encode('utf-8'))
+        elif b'/pedestrians' in request:
+            pedestrian_request = True
+            print("ped requested")
+            conn.send(b'HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n')
+            conn.sendall(html.encode('utf-8'))
+        else:
+            conn.send(b'HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n')
+            conn.sendall(html.encode('utf-8'))
+
         conn.close()
     except OSError:
         pass
