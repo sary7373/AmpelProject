@@ -39,16 +39,21 @@ def all_lights_off():
         for light in traffic_light.values():
             light.off()
 
+
+DEFAULT_GREEN_TIME = 8000
+DEFAULT_TRANSITION_TIME = 2000
+DEFAULT_ALL_RED_TIME = 500
+
 # Zustände: (cars_r, cars_y, cars_g, peds_r, peds_y, peds_g, dauer_ms)
 STATES = [
-    (0, 0, 1,  1, 0, 0,  8000),   # Autos grün
-    (0, 1, 0,  1, 0, 0,  2000),   # Autos gelb
-    (1, 0, 0,  1, 0, 0,   500),   # Alle rot
-    (1, 0, 0,  1, 1, 0,  2000),   # Fussgänger rot+gelb
-    (1, 0, 0,  0, 0, 1,  8000),   # Fussgänger grün
-    (1, 0, 0,  0, 1, 0,  2000),   # Fussgänger gelb
-    (1, 0, 0,  1, 0, 0,   500),   # Alle rot
-    (1, 1, 0,  1, 0, 0,  2000),   # Autos rot+gelb
+    (0, 0, 1, 1, 0, 0, DEFAULT_GREEN_TIME),   # Autos grün
+    (0, 1, 0, 1, 0, 0, DEFAULT_TRANSITION_TIME),   # Autos gelb
+    (1, 0, 0, 1, 0, 0, DEFAULT_ALL_RED_TIME),   # Alle rot
+    (1, 0, 0, 1, 1, 0, DEFAULT_TRANSITION_TIME),   # Fussgänger rot+gelb
+    (1, 0, 0, 0, 0, 1, DEFAULT_GREEN_TIME),   # Fussgänger grün
+    (1, 0, 0, 0, 1, 0, DEFAULT_TRANSITION_TIME),   # Fussgänger gelb
+    (1, 0, 0, 1, 0, 0, DEFAULT_ALL_RED_TIME),   # Alle rot
+    (1, 1, 0, 1, 0, 0, DEFAULT_TRANSITION_TIME),   # Autos rot+gelb
 ]
 
 def apply_state(state_index):
@@ -86,7 +91,7 @@ html = """<!DOCTYPE html>
 cars_request = False
 pedestrian_request = False
 
-MIN_GREEN_MS = 3000  # Mindestens 3 Sekunden grün, bevor Request wirkt
+MIN_GREEN_MS = 3000
 
 while True:
     try:
